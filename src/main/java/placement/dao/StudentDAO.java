@@ -116,6 +116,11 @@ public class StudentDAO {
                 }
             }
 
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            System.out.println(
+                    "Registration failed: username already exists."
+            );
+            return -1;
         } catch (Exception e) {
 
             System.out.println(
@@ -123,8 +128,11 @@ public class StudentDAO {
             );
 
             e.printStackTrace();
-        }
+            return -1;
+        } 
 
         return -1;
+
+
     }
 }

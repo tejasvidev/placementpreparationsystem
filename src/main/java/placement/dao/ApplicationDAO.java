@@ -60,6 +60,11 @@ public class ApplicationDAO {
                 );
             }
 
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+                System.out.println(
+                        "Application rejected: this student may have already applied."
+                );
+                return -1;
         } catch (Exception e) {
 
             System.out.println(

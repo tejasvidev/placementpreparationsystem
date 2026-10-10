@@ -14,6 +14,8 @@ import java.util.Map;
 import placement.model.ApplicationStatus;
 import placement.model.Interview;
 import placement.service.InterviewService;
+import placement.concurrency.WelcomeThread;
+import placement.concurrency.ApplicationTask;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -245,7 +247,8 @@ public class PlacementSystem {
             System.out.println("1. View Available Jobs");
             System.out.println("2. Submit Student Application");
             System.out.println("3. View Interview Schedule");
-            System.out.println("4. Exit");
+            System.out.println("4. Concurrent Application Demo");
+            System.out.println("5. Exit");
 
             System.out.print("Enter choice: ");
 
@@ -264,8 +267,12 @@ public class PlacementSystem {
                 case 3:
                     viewInterviewSchedule(student);
                     break;
-
+                
                 case 4:
+                    concurrentApplicationDemo(student);
+                    break;
+                
+                case 5:
                     System.out.println(
                             "Logging out..."
                     );
@@ -401,7 +408,7 @@ public class PlacementSystem {
 
         Application application = new Application(student, selectedJob);
 
-        int applicationId = applicationDAO.addApplication(application);
+        int applicationId = applicationService.submitApplication(application);
 
         if (applicationId != -1) {
             System.out.println("Application submitted successfully!");
@@ -450,6 +457,89 @@ public class PlacementSystem {
         System.out.println("---------------------------------------------");
     }
 
+    private static void concurrentApplicationDemo(Student student) {
+
+        if (student == null) {
+            System.out.println("Please log in first.");
+            return;
+        }
+
+        List<Job> jobs = jobService.getAvailableJobs();
+
+        if (jobs == null || jobs.isEmpty()) {
+            System.out.println("No jobs are currently available.");
+            return;
+        }
+
+        System.out.println("\n===== CONCURRENT APPLICATION DEMO =====");
+        System.out.println("Logged-in student: " + student.getName());
+
+        for (Job job : jobs) {
+            System.out.println(
+                    "Job ID: " + job.getJobId()
+                    + " | Title: " + job.getJobTitle()
+            );
+        }
+
+        System.out.print("Enter Job ID: ");
+        int jobId = readInt(scanner);
+
+        Job selectedJob = null;
+
+        for (Job job : jobs) {
+            if (job.getJobId() == jobId) {
+                selectedJob = job;
+                break;
+            }
+        }
+
+        if (selectedJob == null) {
+            System.out.println("Invalid Job ID.");
+            return;
+        }
+
+        final Job job = selectedJob;
+        final int numberOfRequests = 3;
+
+        List<Thread> threads = new java.util.ArrayList<>();
+
+        System.out.println(
+                "\nLaunching " + numberOfRequests
+                + " concurrent application requests..."
+        );
+
+        for (int i = 1; i <= numberOfRequests; i++) {
+
+            Thread thread = new Thread(
+                    new ApplicationTask(student, job, applicationService),
+                    "Application-Thread-" + i
+            );
+
+            threads.add(thread);
+            thread.start();
+        }
+
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Demo interrupted.");
+                return;
+            }
+        }
+
+        System.out.println(
+                "\nAll concurrent application requests have finished."
+        );
+
+        System.out.println(
+                "Check the company application list to verify "
+                + "that no duplicate application was inserted."
+        );
+
+        System.out.println("========================================");
+    }
 
 
     // =========================================================
