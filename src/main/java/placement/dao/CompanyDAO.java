@@ -9,33 +9,6 @@ import java.sql.ResultSet;
 
 public class CompanyDAO {
 
-    public void addCompany(Company company) {
-
-        String sql = """
-                INSERT INTO companies
-                (company_id, username, password_hash, name, email, industry)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """;
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setInt(1, company.getCompanyId());
-            statement.setString(2, company.getUsername());
-            statement.setString(3, company.getPasswordHash());
-            statement.setString(4, company.getName());
-            statement.setString(5, company.getEmail());
-            statement.setString(6, company.getIndustry());
-
-            statement.executeUpdate();
-
-            System.out.println("Company added successfully.");
-
-        } catch (Exception e) {
-            System.out.println("Failed to add company.");
-            e.printStackTrace();
-        }
-    }
 
     public Company findByUsername(String username) {
 

@@ -4,7 +4,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class PlacementProcessingStats {
 
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock(true);
 
     private int applicationsProcessed;
     private int applicationsSelected;

@@ -82,47 +82,6 @@ public class ConcurrentApplicationDemo {
                 return;
             }
         }
-        
-    System.out.println("\n===== REENTRANTLOCK DEMO =====");
-
-    PlacementProcessingStats stats =
-            new PlacementProcessingStats();
-
-    Thread statsThread1 = new Thread(() -> {
-        for (int i = 0; i < 3; i++) {
-            stats.recordProcessedApplication();
-        }
-    }, "Stats-Thread-1");
-
-    Thread statsThread2 = new Thread(() -> {
-        for (int i = 0; i < 3; i++) {
-            stats.recordProcessedApplication();
-        }
-    }, "Stats-Thread-2");
-
-    statsThread1.start();
-    statsThread2.start();
-
-    try {
-        statsThread1.join();
-        statsThread2.join();
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        System.out.println("Statistics demo interrupted.");
-        return;
-    }
-
-    System.out.println(
-            "Final processed count: "
-            + stats.getApplicationsProcessed()
-    );
-
-
-        System.out.println("\n===== DEMO COMPLETED =====");
-        System.out.println(
-            "Successfully processed applications: "
-            + applicationService.getTotalApplicationsProcessed()
-        );
     }
 
 }

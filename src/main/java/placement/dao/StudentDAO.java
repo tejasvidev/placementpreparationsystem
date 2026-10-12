@@ -8,34 +8,7 @@ import java.sql.PreparedStatement;
 
 public class StudentDAO {
 
-    public void addStudent(Student student) {
 
-        String sql = """
-                INSERT INTO students
-                (student_id, username, password_hash, name, email, cgpa, branch)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """;
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setInt(1, student.getStudentId());
-            statement.setString(2, student.getUsername());
-            statement.setString(3, student.getPasswordHash());
-            statement.setString(4, student.getName());
-            statement.setString(5, student.getEmail());
-            statement.setDouble(6, student.getCgpa());
-            statement.setString(7, student.getBranch());
-
-            statement.executeUpdate();
-
-            System.out.println("Student added successfully.");
-
-        } catch (Exception e) {
-            System.out.println("Failed to add student.");
-            e.printStackTrace();
-        }
-    }
 
     public Student findByUsername(String username) {
 

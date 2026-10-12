@@ -11,7 +11,6 @@ import placement.service.JobService;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Map;
-import placement.model.ApplicationStatus;
 import placement.model.Interview;
 import placement.service.InterviewService;
 import placement.concurrency.WelcomeThread;
@@ -35,7 +34,6 @@ public class PlacementSystem {
     private static final JobService jobService = new JobService();
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
 
@@ -112,13 +110,13 @@ public class PlacementSystem {
                             studentRegistration(scanner);
 
                     if (registered) {
+                        System.out.println("Please login to continue.");
 
-                        System.out.println();
-                        System.out.println(
-                                "Please login to continue."
-                        );
+                        student = studentLogin(scanner);
 
-                        studentLogin(scanner);
+                        if (student != null) {
+                            studentDashboard(scanner, student);
+                        }
                     }
 
                     break;
@@ -180,16 +178,16 @@ public class PlacementSystem {
             System.out.println("====== STUDENT REGISTRATION ======");
 
             String username = readValidatedUsername(scanner);
+            if (authenticationService.usernameExists(username)) {
+                System.out.println("Username already exists.");
+                return false;
+            }
             String password = readValidatedPassword(scanner);
             String name = readNonEmptyString(scanner, "Name: ");
             String email = readNonEmptyString(scanner, "Email: ");
             double cgpa = readValidatedCgpa(scanner);
             String branch = readNonEmptyString(scanner, "Branch: ");
 
-            if (authenticationService.usernameExists(username)) {
-                System.out.println("Username already exists.");
-                return false;
-            }
 
             Student student = new Student(
                     username,
@@ -580,14 +578,15 @@ public class PlacementSystem {
                             companyRegistration(scanner);
 
                     if (registered) {
+                        System.out.println("Please login to continue.");
 
-                        System.out.println();
-                        System.out.println(
-                                "Please login to continue."
-                        );
+                        Company loggedInCompany = companyLogin(scanner);
 
-                        companyLogin(scanner);
+                        if (loggedInCompany != null) {
+                            companyDashboard(scanner, loggedInCompany);
+                        }
                     }
+
 
                     break;
 
@@ -627,16 +626,12 @@ public class PlacementSystem {
                         password
                 );
 
-        if (company != null) {
-
+        if (company  != null) {
             System.out.println();
-            System.out.println(
-                    "Welcome, " + company.getName()
-            );
+            Thread welcomeThread =
+                    new WelcomeThread(company.getUsername());
 
-            System.out.println(
-                    "Industry: " + company.getIndustry()
-            );
+            welcomeThread.start();
 
             return company;
         }
