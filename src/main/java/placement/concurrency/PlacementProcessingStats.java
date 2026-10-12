@@ -1,4 +1,3 @@
-
 package placement.concurrency;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,7 +19,6 @@ public class PlacementProcessingStats {
                     + " | Thread: "
                     + Thread.currentThread().getName()
             );
-
         } finally {
             lock.unlock();
         }
@@ -36,7 +34,6 @@ public class PlacementProcessingStats {
                     + " | Thread: "
                     + Thread.currentThread().getName()
             );
-
         } finally {
             lock.unlock();
         }

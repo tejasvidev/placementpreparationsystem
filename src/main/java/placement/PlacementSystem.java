@@ -16,6 +16,8 @@ import placement.model.Interview;
 import placement.service.InterviewService;
 import placement.concurrency.WelcomeThread;
 import placement.concurrency.ApplicationTask;
+import placement.concurrency.PlacementProcessingStats;
+import placement.concurrency.PlacementStatsDemo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +45,8 @@ public class PlacementSystem {
             System.out.println("================================");
             System.out.println("1. Student");
             System.out.println("2. Company");
-            System.out.println("3. Exit");
+            System.out.println("3. Concurrency Demonstration");
+            System.out.println("4. Exit");
             System.out.print("Enter choice: ");
 
             int choice = readInt(scanner);
@@ -59,6 +62,10 @@ public class PlacementSystem {
                     break;
 
                 case 3:
+                    concurrencyMenu(scanner);
+                    break;
+
+                case 4:
                     System.out.println("Exiting application...");
                     scanner.close();
                     return;
@@ -148,19 +155,11 @@ public class PlacementSystem {
                 );
 
         if (student != null) {
-
             System.out.println();
-            System.out.println(
-                    "Welcome, " + student.getName()
-            );
+            Thread welcomeThread =
+                new WelcomeThread(student.getUsername());
 
-            System.out.println(
-                    "Branch: " + student.getBranch()
-            );
-
-            System.out.println(
-                    "CGPA: " + student.getCgpa()
-            );
+            welcomeThread.start();
 
             return student;
         }
@@ -271,7 +270,7 @@ public class PlacementSystem {
                 case 4:
                     concurrentApplicationDemo(student);
                     break;
-                
+
                 case 5:
                     System.out.println(
                             "Logging out..."
@@ -997,7 +996,44 @@ public class PlacementSystem {
             System.out.println("Application status update failed.");
         }
     }
+    private static void concurrencyMenu(Scanner scanner) {
 
+        while (true) {
+            System.out.println();
+            System.out.println("================================");
+            System.out.println("   CONCURRENCY DEMONSTRATIONS");
+            System.out.println("================================");
+            System.out.println("1. Concurrent Application Processing");
+            System.out.println("2. Concurrent Registration and Login");
+            System.out.println("3. Placement Processing Stats Demo");
+            System.out.println("4. Return to Main Menu");
+            System.out.print("Enter choice: ");
+
+            int choice = readInt(scanner);
+
+            switch (choice) {
+                case 1:
+                    placement.concurrency.ConcurrentApplicationDemo.main(new String[0]
+                    );
+                    break;
+
+                case 2:
+                    placement.concurrency.ConcurrentRegistrationDemo.main(new String[0]
+                    );
+                    break;
+
+                case 3:
+                    PlacementStatsDemo.runDemo();
+                    break;
+
+                case 4:
+                    return;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
 
 
     // =========================================================
